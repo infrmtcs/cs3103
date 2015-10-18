@@ -1,5 +1,28 @@
 package controller;
 
-public class Controller {
+import java.util.*;
 
+import storage.Storage;
+import crawler.Crawler;
+
+public class Controller {
+	Queue<String> urlSeeds = new LinkedList<String>();
+	String command = null;
+ 	
+	
+	
+	public void getURLSeeds(){
+		Storage storage = new Storage();
+		urlSeeds = storage.getURLSeeds();
+	}
+	
+	public void getHtmlFile(){
+		Crawler crawler = new Crawler();
+		
+		
+	}
+	
+	public String getControllerCommand(){
+		return command;
+	}
 }
