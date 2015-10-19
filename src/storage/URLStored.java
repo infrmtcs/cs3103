@@ -1,29 +1,32 @@
 package storage;
 
 public class URLStored {
+	public static final int FALSE = 0;
+	public static final int TRUE = 1;
+	
 	String url = null;
-	boolean visited = false;
+	int visited = FALSE;
 	int id = -1;
 
 	public URLStored(){}
 	
-	public URLStored(int id, String url, boolean visited) {
+	public URLStored(int id, String url, int visited) {
 		this.id = id;
 		this.url = url;
 		this.visited = visited;
 	}
 	
-	public URLStored(String url, boolean visited) {
+	public URLStored(String url, int visited) {
 		this.url = url;
 		this.visited = visited;
 	}
 	
 	public String getURL(){
-		return this.url;
+		return url;
 	}
 	
-	public boolean getVisited(){
-		return this.visited;
+	public int getVisited(){
+		return visited;
 	}
 	
 	public int getId(){
@@ -34,7 +37,7 @@ public class URLStored {
 		this.url = url;
 	}
 	
-	public void setVisted(boolean visited){
+	public void setVisited(int visited){
 		this.visited = visited;
 	}
 	

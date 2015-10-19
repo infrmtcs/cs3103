@@ -8,8 +8,6 @@ import crawler.Crawler;
 public class Controller {
 	Queue<String> urlSeeds = new LinkedList<String>();
 	String command = null;
- 	
-	
 	
 	public void getURLSeeds(){
 		Storage storage = new Storage();
@@ -18,8 +16,6 @@ public class Controller {
 	
 	public void getHtmlFile(){
 		Crawler crawler = new Crawler();
-		
-		
 	}
 	
 	public String getControllerCommand(){
