@@ -2,7 +2,6 @@ package crawler;
 
 import java.io.*;
 import java.net.*;
-import java.util.*;
 import java.util.concurrent.ConcurrentLinkedQueue;
 
 class CrawlerResult {
@@ -102,7 +101,9 @@ public class Crawler {
 
 	public static void main(String[] args) {
 		Crawler crawler = new Crawler();
-		crawler.crawlSearchEngine(YAHOO, "infrmtcs");
+        crawler.crawlSearchEngine(YAHOO, "infrmtcs");
+        crawler.crawlSearchEngine(BING, "infrmtcs");
+        crawler.crawlSearchEngine(GOOGLE, "infrmtcs");
 		
 		while (crawler.result.isEmpty()) {
 			System.err.println("waiting");

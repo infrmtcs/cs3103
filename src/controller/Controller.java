@@ -11,7 +11,6 @@ public class Controller {
 	
 	public void getURLSeeds(){
 		Storage storage = new Storage();
-		urlSeeds = storage.getURLSeeds();
 	}
 	
 	public void getHtmlFile(){
