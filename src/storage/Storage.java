@@ -68,11 +68,11 @@ public class Storage {
         stmt.close();
     }
     
-    private URLStored getURLStored(ResultSet rs) throws Exception {
+    private CrawlerResult getURLStored(ResultSet rs) throws Exception {
         String url = rs.getString(URL);
         String html = rs.getString(HTML);
         double latency = rs.getDouble(LATENCY);
-        URLStored urlStored = new URLStored(url, html, latency);
+        CrawlerResult urlStored = new CrawlerResult(url, html, latency);
         return urlStored;
     }
     
@@ -103,7 +103,7 @@ public class Storage {
     /*
      * Insert a row into table
      */
-    public void insertRowTable(URLStored entry) {
+    public void insertRowTable(CrawlerResult entry) {
         try {
             PreparedStatement stmt = connector.prepareStatement(INSERT_COMMAND);
             stmt.setString(1, entry.url);
@@ -120,8 +120,8 @@ public class Storage {
     /*
      * Retrieve all rows in table
      */
-    public ArrayList<URLStored> retrieveTable() {
-        ArrayList<URLStored> listEntries = new ArrayList<URLStored>();
+    public ArrayList<CrawlerResult> retrieveTable() {
+        ArrayList<CrawlerResult> listEntries = new ArrayList<CrawlerResult>();
         try {
             Statement stmt = connector.createStatement();
             ResultSet rs = stmt.executeQuery(SELECT_ALL_COMMAND);
@@ -140,8 +140,8 @@ public class Storage {
     /*
      * Retrieve a row in table
      */
-    public URLStored retrieveRowTable(String url) {
-        URLStored res = null;
+    public CrawlerResult retrieveRowTable(String url) {
+        CrawlerResult res = null;
         try {
             PreparedStatement stmt = connector.prepareStatement(SELECT_URL_COMMAND);
             stmt.setString(1, url);

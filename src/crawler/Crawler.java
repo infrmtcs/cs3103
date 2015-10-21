@@ -4,15 +4,7 @@ import java.io.*;
 import java.net.*;
 import java.util.concurrent.ConcurrentLinkedQueue;
 
-class CrawlerResult {
-	String queryUrl;
-	String htmlContent;
-	
-	public CrawlerResult(String queryUrl, String htmlContent) {
-		this.queryUrl = queryUrl;
-		this.htmlContent = htmlContent;
-	}
-}
+import storage.CrawlerResult;
 
 class Url {
 	String path;
@@ -67,7 +59,7 @@ class Connector implements Runnable {
 			while ((line = input.readLine()) != null) {
 				html += line + "\r\n";
 			}
-			result.offer(new CrawlerResult(url.path, html));
+			result.offer(new CrawlerResult(url.path, html, 0.0));
 			
 			input.close();
 			output.close();
@@ -112,6 +104,6 @@ public class Crawler {
 			} catch (Exception e) {
 			}
 		}
-		System.err.println(crawler.result.peek().htmlContent);
+		System.err.println(crawler.result.peek().html);
 	}
 }
