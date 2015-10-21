@@ -6,42 +6,14 @@ import java.util.concurrent.LinkedBlockingQueue;
 
 import storage.CrawlerResult;
 
-class Url {
-	String path;
-	String host;
-	String query;
-	
-	public Url(String url) {
-		path = url;
-		if (url.startsWith("http")) {
-			int colon = url.indexOf(':');
-			// We're ignoring http:// in http://foo.bar/
-			url = url.substring(colon + 3); 
-		}
-		
-		int slash = url.indexOf('/');
-		if (slash != -1) {
-			// After we deleted http://
-			// Host is the part before the first /
-			host = url.substring(0, slash);
-			// Query is the rest
-			query = url.substring(slash);
-		} else {
-			// No queries here => query should be empty.
-			host = url;
-			query = "";
-		}
-	}
-}
-
 class Connector implements Runnable {
 	private static final int HTTP_PORT = 80;
 	
-	private Url url;
+	private URL url;
 	private LinkedBlockingQueue<CrawlerResult> result;
 	
 	
-	private String getHttpRequest(Url url) {
+	private String getHttpRequest(URL url) {
 		String req = String.format("GET %s HTTP/1.0\r\nHost: %s\r\nConnection: Keep-Alive\r\n\r\n", url.query, url.host);
 		return req;
 	}
@@ -72,26 +44,17 @@ class Connector implements Runnable {
 		}
 	}
 	
-	public Connector(String url, LinkedBlockingQueue<CrawlerResult> result) {
-		this.url = new Url(url);
+	public Connector(URL url, LinkedBlockingQueue<CrawlerResult> result) {
+		this.url = url;
 		this.result = result;
 	}
 }
 
 public class Crawler {
 	public LinkedBlockingQueue<CrawlerResult> result = new LinkedBlockingQueue<CrawlerResult>();
-	public static final String GOOGLE = "www.google.com.sg/search?q=%s"; 
-	public static final String BING = "www.bing.com/search?q=%s";
-	public static final String YAHOO = "sg.search.yahoo.com/search?p=%s";
 	
-	public void crawl(String url) {
+	public void crawl(URL url) {
 		Thread thread = new Thread(new Connector(url, result));
 		thread.start();
-	}
-	
-	public void crawlSearchEngine(String engine, String keyword) {
-//	    convert from "this phrase" to "this+phrase"
-		keyword = keyword.replace(' ', '+');
-		crawl(String.format(engine, keyword));
 	}
 }

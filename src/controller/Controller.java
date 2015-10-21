@@ -6,9 +6,37 @@ import java.util.concurrent.TimeUnit;
 import storage.CrawlerResult;
 import storage.Storage;
 import crawler.Crawler;
+import crawler.SearchEngine;
+import crawler.URL;
+
+class CandidateComparator {
+    
+}
+
+class Candidate {
+    static Comparator<Candidate> comparator = new Comparator<Candidate>() {
+        public int compare(Candidate left, Candidate right) {
+            if (left.score != right.score) {
+                return (left.score > right.score) ? -1 : 1;
+            } else {
+                return 0;
+            }
+        }
+    };
+    
+    double score;
+    URL url;
+    
+    public Candidate(double score, URL url) {
+        this.score = score;
+        this.url = url;
+    }
+}
 
 public class Controller {
     private static long TIMEOUT = 500; // 500ms = 0.5s
+    
+    private PriorityQueue<Candidate> pageRank = new PriorityQueue<Candidate>(Candidate.comparator);
     
     Crawler crawler = new Crawler();
     Storage storage = new Storage();
@@ -28,9 +56,12 @@ public class Controller {
 	}
 	
 	private void query(String input) {
-        crawler.crawlSearchEngine(Crawler.GOOGLE, input);
-        crawler.crawlSearchEngine(Crawler.BING, input);
-        crawler.crawlSearchEngine(Crawler.YAHOO, input);
+        pageRank.offer(new Candidate(1.0, new URL(SearchEngine.GOOGLE, input)));
+        pageRank.offer(new Candidate(1.0, new URL(SearchEngine.BING, input)));
+        pageRank.offer(new Candidate(1.0, new URL(SearchEngine.YAHOO, input)));
+        getResult();
+        getResult();
+        getResult();
 	}
 	
 	
