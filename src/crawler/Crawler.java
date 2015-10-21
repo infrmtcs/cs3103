@@ -2,7 +2,7 @@ package crawler;
 
 import java.io.*;
 import java.net.*;
-import java.util.concurrent.ConcurrentLinkedQueue;
+import java.util.concurrent.LinkedBlockingQueue;
 
 import storage.CrawlerResult;
 
@@ -38,7 +38,7 @@ class Connector implements Runnable {
 	private static final int HTTP_PORT = 80;
 	
 	private Url url;
-	private ConcurrentLinkedQueue<CrawlerResult> result;
+	private LinkedBlockingQueue<CrawlerResult> result;
 	
 	
 	private String getHttpRequest(Url url) {
@@ -48,6 +48,7 @@ class Connector implements Runnable {
 	
 	public void run() {
 		try {
+		    long startTime = System.nanoTime();
 			Socket socket = new Socket(url.host, HTTP_PORT);
 			DataOutputStream output = new DataOutputStream(socket.getOutputStream());
 			BufferedReader input = new BufferedReader(new InputStreamReader(socket.getInputStream()));
@@ -59,7 +60,9 @@ class Connector implements Runnable {
 			while ((line = input.readLine()) != null) {
 				html += line + "\r\n";
 			}
-			result.offer(new CrawlerResult(url.path, html, 0.0));
+			
+			double latency = (double)(System.nanoTime() - startTime) / (1e9);
+			result.offer(new CrawlerResult(url.path, html, latency));
 			
 			input.close();
 			output.close();
@@ -69,17 +72,17 @@ class Connector implements Runnable {
 		}
 	}
 	
-	public Connector(String url, ConcurrentLinkedQueue<CrawlerResult> result) {
+	public Connector(String url, LinkedBlockingQueue<CrawlerResult> result) {
 		this.url = new Url(url);
 		this.result = result;
 	}
 }
 
 public class Crawler {
-	private ConcurrentLinkedQueue<CrawlerResult> result = new ConcurrentLinkedQueue<CrawlerResult>();
-	private static final String GOOGLE = "www.google.com.sg/search?q=%s"; 
-	private static final String BING = "www.bing.com/search?q=%s";
-	private static final String YAHOO = "sg.search.yahoo.com/search?p=%s";
+	public LinkedBlockingQueue<CrawlerResult> result = new LinkedBlockingQueue<CrawlerResult>();
+	public static final String GOOGLE = "www.google.com.sg/search?q=%s"; 
+	public static final String BING = "www.bing.com/search?q=%s";
+	public static final String YAHOO = "sg.search.yahoo.com/search?p=%s";
 	
 	public void crawl(String url) {
 		Thread thread = new Thread(new Connector(url, result));
@@ -87,23 +90,8 @@ public class Crawler {
 	}
 	
 	public void crawlSearchEngine(String engine, String keyword) {
+//	    convert from "this phrase" to "this+phrase"
 		keyword = keyword.replace(' ', '+');
 		crawl(String.format(engine, keyword));
-	}
-
-	public static void main(String[] args) {
-		Crawler crawler = new Crawler();
-        crawler.crawlSearchEngine(YAHOO, "infrmtcs");
-        crawler.crawlSearchEngine(BING, "infrmtcs");
-        crawler.crawlSearchEngine(GOOGLE, "infrmtcs");
-		
-		while (crawler.result.isEmpty()) {
-			System.err.println("waiting");
-			try {
-				Thread.sleep(500);
-			} catch (Exception e) {
-			}
-		}
-		System.err.println(crawler.result.peek().html);
 	}
 }
