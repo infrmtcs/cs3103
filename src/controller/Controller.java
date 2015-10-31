@@ -9,10 +9,6 @@ import crawler.Crawler;
 import crawler.SearchEngine;
 import crawler.URL;
 
-class CandidateComparator {
-    
-}
-
 class Candidate {
     static Comparator<Candidate> comparator = new Comparator<Candidate>() {
         public int compare(Candidate left, Candidate right) {
@@ -55,13 +51,14 @@ public class Controller {
 	    return result;
 	}
 	
-	private void query(String input) {
+	private QueryResult query(String input) {
         pageRank.offer(new Candidate(1.0, new URL(SearchEngine.GOOGLE, input)));
         pageRank.offer(new Candidate(1.0, new URL(SearchEngine.BING, input)));
         pageRank.offer(new Candidate(1.0, new URL(SearchEngine.YAHOO, input)));
         getResult();
         getResult();
         getResult();
+        return new QueryResult("looking forward to");
 	}
 	
 	
