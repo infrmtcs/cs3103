@@ -34,7 +34,7 @@ class Connector implements Runnable {
 			}
 			
 			double latency = (double)(System.nanoTime() - startTime) / (1e9);
-			result.offer(new CrawlerResult(url.path, html, latency));
+			result.offer(new CrawlerResult(url, html, latency));
 			
 			input.close();
 			output.close();

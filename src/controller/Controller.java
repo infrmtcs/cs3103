@@ -51,7 +51,7 @@ public class Controller {
 	    return result;
 	}
 	
-	private QueryResult query(String input) {
+	public QueryResult query(String input) {
         pageRank.offer(new Candidate(1.0, new URL(SearchEngine.GOOGLE, input)));
         pageRank.offer(new Candidate(1.0, new URL(SearchEngine.BING, input)));
         pageRank.offer(new Candidate(1.0, new URL(SearchEngine.YAHOO, input)));

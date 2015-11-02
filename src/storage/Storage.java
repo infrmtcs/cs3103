@@ -3,6 +3,8 @@ package storage;
 import java.sql.*;
 import java.util.*;
 
+import crawler.URL;
+
 public class Storage {
     private static final String SQLITE_CLASS = "org.sqlite.JDBC";
     private static final String DB_PATH = "jdbc:sqlite:./database/data.db";
@@ -69,7 +71,7 @@ public class Storage {
     }
     
     private CrawlerResult getURLStored(ResultSet rs) throws Exception {
-        String url = rs.getString(URL);
+        URL url = new URL(rs.getString(URL));
         String html = rs.getString(HTML);
         double latency = rs.getDouble(LATENCY);
         CrawlerResult urlStored = new CrawlerResult(url, html, latency);
@@ -106,7 +108,7 @@ public class Storage {
     public void insertRowTable(CrawlerResult entry) {
         try {
             PreparedStatement stmt = connector.prepareStatement(INSERT_COMMAND);
-            stmt.setString(1, entry.url);
+            stmt.setString(1, entry.url.path);
             stmt.setString(2, entry.html);
             stmt.setDouble(3, entry.latency);
             stmt.executeUpdate();

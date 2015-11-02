@@ -1,9 +1,10 @@
 package crawler;
 
 public class URL {
-    String path;
-	String host;
-	String query;
+    public String path;
+    public String host;
+    public String query;
+	SearchEngine searchEngine = null; 
 	
 	public URL(String url) {
 		path = url;
@@ -29,5 +30,6 @@ public class URL {
 	
 	public URL(SearchEngine searchEngine, String keyword) {
         this(String.format(searchEngine.rawUrl, keyword.replace(' ', '+')));
+        this.searchEngine = searchEngine;  
     }
 }

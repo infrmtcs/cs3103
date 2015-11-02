@@ -1,10 +1,10 @@
 package storage;
 
 import static org.junit.Assert.*;
-
 import java.util.ArrayList;
-
 import org.junit.Test;
+
+import crawler.URL;
 
 public class StorageTest {
     @Test
@@ -18,12 +18,12 @@ public class StorageTest {
         res = storage.retrieveTable();
         assertTrue("Storage is empty", res.isEmpty());
 
-        ans = new CrawlerResult("http://www.google.com.sg/dat", "<html>Duong Thanh Dat</html>", 0.2);
+        ans = new CrawlerResult(new URL("http://www.google.com.sg/dat"), "<html>Duong Thanh Dat</html>", 0.2);
         storage.insertRowTable(ans);
         res = storage.retrieveTable();
         assertTrue("Now there is 1", res.size() == 1);
         
-        ans = new CrawlerResult("http://www.bing.com/duong", "<html>infrmtcs</html>", 0.3);
+        ans = new CrawlerResult(new URL("http://www.bing.com/duong"), "<html>infrmtcs</html>", 0.3);
         storage.insertRowTable(ans);
         res = storage.retrieveTable();
         assertTrue("Now there are 2", res.size() == 2);
