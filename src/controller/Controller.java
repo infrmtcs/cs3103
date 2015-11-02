@@ -1,5 +1,7 @@
 package controller;
 
+import gui.GUI;
+
 import java.util.*;
 import java.util.concurrent.TimeUnit;
 
@@ -34,9 +36,10 @@ public class Controller {
     
     private PriorityQueue<Candidate> pageRank = new PriorityQueue<Candidate>(Candidate.comparator);
     
-    Crawler crawler = new Crawler();
+    private Crawler crawler = new Crawler();
     Storage storage = new Storage();
-    Scanner scanner = new Scanner(System.in);
+    
+    private GUI window;
 
 	private CrawlerResult getResult() {
 	    CrawlerResult result = null;
@@ -51,14 +54,17 @@ public class Controller {
 	    return result;
 	}
 	
-	public QueryResult query(String input) {
+	public void query(String input) {
         pageRank.offer(new Candidate(1.0, new URL(SearchEngine.GOOGLE, input)));
         pageRank.offer(new Candidate(1.0, new URL(SearchEngine.BING, input)));
         pageRank.offer(new Candidate(1.0, new URL(SearchEngine.YAHOO, input)));
         getResult();
         getResult();
         getResult();
-        return new QueryResult("looking forward to");
+        window.printOutput(new QueryResult("looking forward to"));
 	}
 
+	public Controller(GUI window) {
+        this.window = window;
+    }
 }

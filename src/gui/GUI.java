@@ -38,7 +38,7 @@ public class GUI{
 	private JLabel result;
 	private JPanel resultPanel;
 	
-	private Controller controller;
+	Controller controller;
 
 	/**
 	 * Launch the application.
@@ -48,7 +48,8 @@ public class GUI{
 			public void run() {
 				try {
 					GUI window = new GUI();
-					window.frame.setVisible(true);
+					Controller controller = new Controller(window);
+					window.start(controller);
 				} catch (Exception e) {
 					e.printStackTrace();
 				}
@@ -60,8 +61,16 @@ public class GUI{
 	 * Create the application.
 	 */
 	public GUI() {
-	    controller = new Controller();
 		initialize();
+	}
+	
+	void start(Controller controller) {
+        this.controller = controller;
+        frame.setVisible(true);
+	}
+	
+	public void printOutput(QueryResult output) {
+	    result.setText(output.bestAnswer);
 	}
 
 	/**
@@ -113,8 +122,7 @@ public class GUI{
 				if (input.isEmpty()) {
 					result.setText(EMPTY_SEARCH_STRING);
 				} else {
-					QueryResult output = controller.query(input);
-					result.setText(output.bestAnswer);
+					controller.query(input);
 				}
 			}
 		});
