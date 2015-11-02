@@ -4,7 +4,7 @@ public class URL {
     public String path;
     public String host;
     public String query;
-	SearchEngine searchEngine = null; 
+	public SearchEngine searchEngine = SearchEngine.NONE; 
 	
 	public URL(String url) {
 		path = url;

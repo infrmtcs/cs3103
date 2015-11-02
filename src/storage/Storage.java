@@ -163,6 +163,7 @@ public class Storage {
     public Storage(boolean test) {
         try {
             connector = openDb(test);
+            dropTable();
             createTable();
         } catch (Exception e) {
             System.err.println(e.getClass().getName() + ": " + e.getMessage());
