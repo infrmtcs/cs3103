@@ -93,7 +93,7 @@ public class GUI{
 		
 		JLabel lblPrepochecker = new JLabel(CRAWLER_NAME);
 		panel.add(lblPrepochecker);
-		lblPrepochecker.setFont(new Font(".VnClarendonH", Font.PLAIN, 20));
+		lblPrepochecker.setFont(new Font(".VnClarendonH", Font.PLAIN, 30));
 		lblPrepochecker.setForeground(Color.BLUE);
 		
 		textField = new JTextField();
@@ -123,6 +123,7 @@ public class GUI{
 					result.setText(EMPTY_SEARCH_STRING);
 				} else {
 					controller.query(input);
+					ExecutionGUI executionGUI = new ExecutionGUI();
 				}
 			}
 		});
