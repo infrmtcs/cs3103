@@ -3,6 +3,7 @@ package controller;
 import gui.GUI;
 
 import java.util.*;
+import java.util.concurrent.PriorityBlockingQueue;
 import java.util.concurrent.TimeUnit;
 
 import storage.CrawlerResult;
@@ -33,34 +34,61 @@ class Candidate {
 
 public class Controller {
     private static long TIMEOUT = 500; // 500ms = 0.5s
+    private static int LIMIT = 10;
     
-    private PriorityQueue<Candidate> pageRank = new PriorityQueue<Candidate>(Candidate.comparator);
+    private PriorityBlockingQueue<Candidate> pageRank = new PriorityBlockingQueue<Candidate>(11, Candidate.comparator);
     
+    private Storage storage = new Storage();
     private Crawler crawler = new Crawler();
-    Storage storage = new Storage();
     
     private GUI window;
 
-	private CrawlerResult getResult() {
-	    CrawlerResult result = null;
-	    try {
-	        result = crawler.result.poll(TIMEOUT, TimeUnit.MILLISECONDS);
-	        if (result != null) {
-	            storage.insertRowTable(result);
-	        }
-	    } catch (InterruptedException e) {
-	        System.err.println(e.getClass().getName() + ": " + e.getMessage());
+	private void setupSeed(String input) {
+	    pageRank.addAll(Arrays.asList(new Candidate[] {
+	        new Candidate(1.0, new URL(SearchEngine.GOOGLE, input)),
+	        new Candidate(1.0, new URL(SearchEngine.BING, input)),
+	        new Candidate(1.0, new URL(SearchEngine.YAHOO, input))
+	    }));
+	}
+	
+	private Thread createCrawlRequest() {
+        return new Thread(new Runnable() {
+            public void run() {
+                Candidate next;
+                try {
+                    while (true) {
+                        next = pageRank.poll(TIMEOUT, TimeUnit.MILLISECONDS);
+                        if (next != null) {
+                            CrawlerResult result = storage.retrieveRowTable(next.url.path);
+                            if (result == null) {
+                                result = crawler.crawl(next.url);
+                                if (result != null) {
+                                    storage.insertRowTable(result);
+                                    System.err.println(result.url.path);
+                                    System.err.println(result.latency);
+                                } else {
+                                    System.err.println("NULL");
+                                }
+                            }
+                        }
+                    }
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
+            }
+        });
+	}
+	
+	private void startCrawling() {
+	    for (int turn = 0; turn < LIMIT; ++turn) {
+	        Thread thread = createCrawlRequest();
+	        thread.start();
 	    }
-	    return result;
 	}
 	
 	public void query(String input) {
-        pageRank.offer(new Candidate(1.0, new URL(SearchEngine.GOOGLE, input)));
-        pageRank.offer(new Candidate(1.0, new URL(SearchEngine.BING, input)));
-        pageRank.offer(new Candidate(1.0, new URL(SearchEngine.YAHOO, input)));
-        getResult();
-        getResult();
-        getResult();
+	    setupSeed(input);
+	    startCrawling();
         window.printOutput(new QueryResult("looking forward to"));
 	}
 
