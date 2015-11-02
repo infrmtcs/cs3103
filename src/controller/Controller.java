@@ -63,33 +63,70 @@ public class Controller {
 	    }));
 	}
 	
-	private Thread createCrawlRequest(Candidate next) {
-        return new Thread(new Runnable() {
-            private void handleResult(CrawlerResult result) {
-                storage.insertRowTable(result);
-                if (result.url.searchEngine == SearchEngine.GOOGLE) {
-                    int start = result.html.indexOf("<span class=\"spell\">Showing results for</span>");
-                    if (start != -1) {
-                        start = result.html.indexOf("</span>", start) + "</span>".length();
-                        int end = result.html.indexOf("<span class=\"spell_orig\">Search instead for");
-                        String target = result.html.substring(start, end);
-                        target = target.replaceAll("(?i)<[^>]*>", " ").replaceAll("\\s+", " ").trim();
-                        setBestAnswer(target);
-                    }
-                    System.err.println(result.url.path);
-                } else if (result.url.searchEngine == SearchEngine.BING) {
-                    
-                } else if (result.url.searchEngine == SearchEngine.YAHOO) {
-                    
+	private String removeTag(String target) {
+	    return target.replaceAll("(?i)<[^>]*>", " ").replaceAll("\\s+", " ").trim();
+	}
+	
+	private Boolean googleSuggestion(CrawlerResult result) {
+        if (result.url.searchEngine == SearchEngine.GOOGLE) {
+            int start = result.html.indexOf("<span class=\"spell\">Showing results for</span>");
+            if (start != -1) {
+                start = result.html.indexOf("</span>", start) + "</span>".length();
+                int end = result.html.indexOf("<span class=\"spell_orig\">Search instead for");
+                if (end != -1) {
+                    String target = result.html.substring(start, end);
+                    setBestAnswer(removeTag(target));
+                    return true;
                 }
             }
-            
+        }
+        return false;
+	}
+	
+	private long removeComma(String target) {
+        return Long.valueOf(target.replace(",", ""));
+	}
+	
+	private long getSearchCount(CrawlerResult result) {
+	    if (result.url.searchEngine == SearchEngine.GOOGLE) {
+	        int start = result.html.indexOf("<div id=\"resultStats\">");
+	        start = result.html.indexOf("About ", start) + "About ".length();
+	        int end = result.html.indexOf(" results", start);
+	        String target = result.html.substring(start, end);
+	        return removeComma(target);
+	    } else if (result.url.searchEngine == SearchEngine.BING) {
+	        int start = result.html.indexOf("<span class=\"sb_count\"");
+	        int end = result.html.indexOf("</span>", start) + "</span>".length();
+	        String target = result.html.substring(start, end);
+            target = removeTag(target);
+            end = target.indexOf(" results");
+            target = target.substring(0, end);
+	        return removeComma(target);
+        } else if (result.url.searchEngine == SearchEngine.YAHOO) {
+	        int end = result.html.lastIndexOf(",000 results</span>") + ",000".length();
+	        int start = result.html.lastIndexOf('>', end) + 1;
+	        String target = result.html.substring(start, end);
+	        return removeComma(target);
+	    }
+	    return 0;
+    }
+	
+    private void handleResult(CrawlerResult result) {
+        if (googleSuggestion(result)) {
+            return;
+        }
+        System.out.println(getSearchCount(result) + " " + result.url.searchEngine);
+    }
+    
+	private Thread createCrawlRequest(Candidate next) {
+        return new Thread(new Runnable() {
             public void run() {
                 if (next != null) {
                     CrawlerResult result = storage.retrieveRowTable(next.url.path);
                     if (result == null) {
                         result = crawler.crawl(next.url);
                         if (result != null) {
+                            storage.insertRowTable(result);
                             handleResult(result);
                         }
                     }
