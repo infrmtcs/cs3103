@@ -1,48 +1,28 @@
 package gui;
 
-import java.applet.Applet;
 import java.awt.Color;
-import java.awt.Component;
 import java.awt.EventQueue;
-import java.awt.Graphics;
-import java.awt.Graphics2D;
-import java.awt.RenderingHints;
-
 import javax.swing.JFrame;
 
-import java.awt.FlowLayout;
-
 import javax.swing.JLabel;
-import javax.swing.UIManager;
-
 import java.awt.Font;
 
 import javax.swing.JTextField;
 
 import java.awt.BorderLayout;
 
-import javax.swing.GroupLayout;
-import javax.swing.GroupLayout.Alignment;
-import javax.swing.JApplet;
 import javax.swing.JButton;
 
 import java.awt.event.ActionListener;
 import java.awt.event.ActionEvent;
-import java.awt.geom.Line2D;
-
 import javax.swing.BoxLayout;
-import javax.swing.SwingConstants;
 import javax.swing.JPanel;
-import javax.swing.border.BevelBorder;
 import javax.swing.border.EmptyBorder;
 
-import controller.Controller;
-
-public class GUI extends JFrame{
+public class GUI{
 	
 	private final static String CRAWLER_NAME = "PREPOCHECKER";
 	private final static String EMPTY_SEARCH_STRING = "Please input a key word";
-	private final static String EMPTY_STRING = "";
 	
 	private JFrame frame;
 	private JTextField textField;
