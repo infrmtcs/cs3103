@@ -60,10 +60,5 @@ public class Controller {
         getResult();
         return new QueryResult("looking forward to");
 	}
-	
-	
-	public static void main(String[] args) {
-	    Controller controller = new Controller();
-	    controller.query("looking forward with");
-    }
+
 }

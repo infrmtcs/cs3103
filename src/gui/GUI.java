@@ -2,9 +2,10 @@ package gui;
 
 import java.awt.Color;
 import java.awt.EventQueue;
-import javax.swing.JFrame;
 
+import javax.swing.JFrame;
 import javax.swing.JLabel;
+
 import java.awt.Font;
 
 import javax.swing.JTextField;
@@ -15,9 +16,13 @@ import javax.swing.JButton;
 
 import java.awt.event.ActionListener;
 import java.awt.event.ActionEvent;
+
 import javax.swing.BoxLayout;
 import javax.swing.JPanel;
 import javax.swing.border.EmptyBorder;
+
+import controller.Controller;
+import controller.QueryResult;
 
 public class GUI{
 	
@@ -32,6 +37,8 @@ public class GUI{
 	private JPanel panel_1;
 	private JLabel result;
 	private JPanel resultPanel;
+	
+	private Controller controller;
 
 	/**
 	 * Launch the application.
@@ -53,6 +60,7 @@ public class GUI{
 	 * Create the application.
 	 */
 	public GUI() {
+	    controller = new Controller();
 		initialize();
 	}
 
@@ -101,13 +109,12 @@ public class GUI{
 		 */
 		btnSearch.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent arg0) {
-				if(textField.getText().isEmpty()){
+			    String input = textField.getText();
+				if (input.isEmpty()) {
 					result.setText(EMPTY_SEARCH_STRING);
-				}
-				else{
-					//Controller controller = new Controller(textField.getText());
-					String output = "default";
-					result.setText("RESULT: " + output);
+				} else {
+					QueryResult output = controller.query(input);
+					result.setText(output.bestAnswer);
 				}
 			}
 		});
