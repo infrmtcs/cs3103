@@ -17,7 +17,6 @@ import javax.swing.border.EmptyBorder;
 import javax.swing.border.LineBorder;
 
 import controller.Controller;
-import controller.QueryResult;
 
 public class GUI {
 	private final static String CRAWLER_NAME = "PREPOCHECKER";
@@ -29,11 +28,12 @@ public class GUI {
 	private JPanel panel;
 	private JPanel prepocheckerLayout;
 	private JPanel panel_1;
+	private JPanel resultPanel;
+	private JLabel result;
 	
 	static ExecutionGUI executionGUI;
 	static GUI window;
-	private JPanel resultPanel;
-	private JLabel result;
+	static Controller controller;
 
 	/**
 	 * Launch the application.
@@ -44,6 +44,7 @@ public class GUI {
 			public void run() {
 				try {
 					window = new GUI();
+					controller = new Controller();
 				} catch (Exception e) {
 					e.printStackTrace();
 				}
@@ -66,6 +67,7 @@ public class GUI {
 		frame.setBounds(100, 100, 501, 330);
 		frame.setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
 		frame.getContentPane().setLayout(null);
+		frame.setVisible(true);
 		
 		prepocheckerLayout = new JPanel();
 		prepocheckerLayout.setBounds(0, 0, 485, 240);
@@ -122,13 +124,10 @@ public class GUI {
 					result.setText(EMPTY_SEARCH_STRING);
 				} else {
 					executionGUI = new ExecutionGUI();
-					Controller controller = new Controller(executionGUI);
-					String output = controller.query(input);
+					String output = controller.query(input, executionGUI);
 					result.setText(output);
 				}
 			}
 		});
-		
-		frame.setVisible(true);
 	}
 }

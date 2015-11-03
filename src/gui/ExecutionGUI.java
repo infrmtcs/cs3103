@@ -18,12 +18,15 @@ import javax.swing.border.MatteBorder;
 
 import storage.CrawlerResult;
 
-public class ExecutionGUI extends JFrame {
+public class ExecutionGUI {
 	private final static String GUI_NAME = "EXECUTION GUI";
 
 	private JFrame frame;
 	private JPanel panel;
 	
+	/**
+	 * Launch the application
+	 */
 	public ExecutionGUI(){
 		initialize();
 	}
@@ -31,7 +34,7 @@ public class ExecutionGUI extends JFrame {
 	/**
 	 * Initialize the contents of the frame.
 	 */
-	public void initialize() {
+	private void initialize() {
 		frame = new JFrame(GUI_NAME);
 		frame.setBounds(100, 100, 519, 300);
 		frame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);

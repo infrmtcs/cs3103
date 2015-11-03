@@ -1,8 +1,6 @@
 package controller;
 
 import gui.ExecutionGUI;
-import gui.GUI;
-
 import java.util.*;
 import java.util.concurrent.PriorityBlockingQueue;
 import java.util.concurrent.TimeUnit;
@@ -160,14 +158,11 @@ public class Controller {
 	    }
 	}
 	
-	public String query(String input) {
+	public String query(String input, ExecutionGUI execWindow) {
+		this.execWindow = execWindow;
 	    setBestAnswer(input);
 	    startCrawling();
 	    
 	    return best.bestAnswer;
 	}
-
-	public Controller(ExecutionGUI execWindow) {
-        this.execWindow = execWindow;
-    }
 }
