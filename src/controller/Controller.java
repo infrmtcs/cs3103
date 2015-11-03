@@ -1,5 +1,6 @@
 package controller;
 
+import gui.ExecutionGUI;
 import gui.GUI;
 
 import java.util.*;
@@ -43,6 +44,7 @@ public class Controller {
     private Crawler crawler = new Crawler();
     
     private GUI window;
+    private ExecutionGUI execWindow;
     
     private QueryResult best = new QueryResult("");
     private int counter = 0;
@@ -127,8 +129,11 @@ public class Controller {
                         result = crawler.crawl(next.url);
                         if (result != null) {
                             storage.insertRowTable(result);
+                            execWindow.realTimeDisplay(result);
                             handleResult(result);
                         }
+                    } else {
+                        execWindow.realTimeDisplay(result);
                     }
                 }
             }
@@ -162,7 +167,8 @@ public class Controller {
         window.printOutput(best);
 	}
 
-	public Controller(GUI window) {
+	public Controller(GUI window, ExecutionGUI execWindow) {
         this.window = window;
+        this.execWindow = execWindow;
     }
 }

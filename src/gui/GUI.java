@@ -41,7 +41,8 @@ public class GUI {
 			public void run() {
 				try {
 					GUI window = new GUI();
-					Controller controller = new Controller(window);
+                    ExecutionGUI executionGUI = new ExecutionGUI();
+					Controller controller = new Controller(window, executionGUI);
 					window.start(controller);
 				} catch (Exception e) {
 					e.printStackTrace();
