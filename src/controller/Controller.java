@@ -24,10 +24,14 @@ class Candidate {
     
     double score;
     URL url;
+    String current;
+    String alt;
     
-    public Candidate(double score, URL url) {
+    public Candidate(double score, URL url, String current, String alt) {
         this.score = score;
         this.url = url;
+        this.current = current;
+        this.alt = alt;
     }
 }
 
@@ -56,9 +60,9 @@ public class Controller {
 
 	private void setupSeed(String input) {
 	    pageRank.addAll(Arrays.asList(new Candidate[] {
-	        new Candidate(1.0, new URL(SearchEngine.GOOGLE, input)),
-	        new Candidate(1.0, new URL(SearchEngine.BING, input)),
-	        new Candidate(1.0, new URL(SearchEngine.YAHOO, input))
+	        new Candidate(1.0, new URL(SearchEngine.GOOGLE, input), best.bestAnswer, best.bestAnswer),
+	        new Candidate(1.0, new URL(SearchEngine.BING, input), best.bestAnswer, best.bestAnswer),
+	        new Candidate(1.0, new URL(SearchEngine.YAHOO, input), best.bestAnswer, best.bestAnswer)
 	    }));
 	}
 	
@@ -144,7 +148,10 @@ public class Controller {
             System.out.println(counter);
 	        Candidate next;
             try {
-                next = pageRank.poll(TIMEOUT, TimeUnit.MILLISECONDS);
+                do {
+                    next = pageRank.poll(TIMEOUT, TimeUnit.MILLISECONDS);
+                    if (next == null) break;
+                } while (next.current != best.bestAnswer);
                 if (next != null) {
                     last = counter;
                     Thread thread = createCrawlRequest(next);
