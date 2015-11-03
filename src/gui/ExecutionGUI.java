@@ -2,6 +2,7 @@ package gui;
 
 import java.awt.BorderLayout;
 import java.awt.Color;
+import java.awt.FlowLayout;
 import java.awt.Font;
 import java.awt.GridLayout;
 
@@ -11,34 +12,28 @@ import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.ScrollPaneConstants;
 import javax.swing.SwingConstants;
-import javax.swing.border.Border;
 import javax.swing.border.EmptyBorder;
+import javax.swing.border.LineBorder;
+import javax.swing.border.MatteBorder;
 
 import storage.CrawlerResult;
 import crawler.URL;
 
-import javax.swing.border.LineBorder;
-import javax.swing.BoxLayout;
-import javax.swing.border.MatteBorder;
-import java.awt.FlowLayout;
-
+@SuppressWarnings("serial")
 public class ExecutionGUI extends JFrame {
 	private final static String GUI_NAME = "EXECUTION GUI";
 
 	private JFrame frame;
 	private JPanel panel;
-
-	/**
-	 * Create the application.
-	 */
-	public ExecutionGUI() {		
+	
+	public ExecutionGUI(){
 		initialize();
 	}
 
 	/**
 	 * Initialize the contents of the frame.
 	 */
-	private void initialize() {
+	public void initialize() {
 		frame = new JFrame(GUI_NAME);
 		frame.setBounds(100, 100, 519, 300);
 		frame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);

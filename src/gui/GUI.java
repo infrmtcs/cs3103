@@ -17,10 +17,8 @@ import javax.swing.border.LineBorder;
 
 import controller.Controller;
 import controller.QueryResult;
-import javax.swing.SwingConstants;
 
-public class GUI{
-	
+public class GUI {
 	private final static String CRAWLER_NAME = "PREPOCHECKER";
 	private final static String EMPTY_SEARCH_STRING = "Please input a key word";
 	
@@ -126,10 +124,11 @@ public class GUI{
 		btnSearch.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent arg0) {
 			    String input = textField.getText();
+			    
 				if (input.isEmpty()) {
 					result.setText(EMPTY_SEARCH_STRING);
 				} else {
-					ExecutionGUI executionGUI = new ExecutionGUI();
+					new ExecutionGUI();
 					controller.query(input);
 				}
 			}
