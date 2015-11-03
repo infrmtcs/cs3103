@@ -1,7 +1,9 @@
 package controller;
 
 import gui.ExecutionGUI;
+
 import java.util.*;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.PriorityBlockingQueue;
 import java.util.concurrent.TimeUnit;
 
@@ -37,9 +39,18 @@ class Candidate {
 
 public class Controller {
     private static long TIMEOUT = 500; // 500ms = 0.5s
-    private static long FAST_END = 10; // 500ms = 0.5s
+    private static long FAST_END = 20;
     private static int LIMIT = 100;
     
+    private HashSet<String> prepositions = new HashSet<String>(Arrays.asList(new String[] {
+        "on", "in", "at", "since", "for", 
+        "with", "before", "to", "past", "by", 
+        "over", "up", "down", "above", "below", 
+        "through", "into", "about", "off", "from", 
+        "under"
+    }));
+
+    private ConcurrentHashMap<String, QueryResult> answers = new ConcurrentHashMap<String, QueryResult>();
     private PriorityBlockingQueue<Candidate> pageRank = new PriorityBlockingQueue<Candidate>(1, Candidate.comparator);
     
     private Storage storage = new Storage();
@@ -51,18 +62,34 @@ public class Controller {
     private int counter = 0;
     
     private void setBestAnswer(String answer) {
-        if (best.bestAnswer != answer) {
-            best.bestAnswer = answer;
-            counter = 0;
-            setupSeed(answer);
+        if (best.bestAnswer == answer) {
+            return;
+        }
+        best.bestAnswer = answer;
+        counter = 0;
+        String[] words = answer.split("\\s+", ' ');
+        int pos = -1;
+        for (int i = 0; i < words.length; ++i) {
+            if (prepositions.contains(words[i])) {
+                pos = i;
+                break;
+            }
+        }
+        if (pos == -1) {
+            return;
+        }
+        for (String prep: prepositions) {
+            words[pos] = prep;
+            setupSeed(String.join(" ", words));
         }
     }
 
 	private void setupSeed(String input) {
+	    answers.put(input, new QueryResult(input));
 	    pageRank.addAll(Arrays.asList(new Candidate[] {
-	        new Candidate(1.0, new URL(SearchEngine.GOOGLE, input), best.bestAnswer, best.bestAnswer),
-	        new Candidate(1.0, new URL(SearchEngine.BING, input), best.bestAnswer, best.bestAnswer),
-	        new Candidate(1.0, new URL(SearchEngine.YAHOO, input), best.bestAnswer, best.bestAnswer)
+            new Candidate(1.0, new URL(SearchEngine.GOOGLE, input, false), best.bestAnswer, input)
+//          new Candidate(1.0, new URL(SearchEngine.BING, input, false), best.bestAnswer, input)
+//	        new Candidate(1.0, new URL(SearchEngine.YAHOO, input), best.bestAnswer, input)
 	    }));
 	}
 	
@@ -91,34 +118,37 @@ public class Controller {
 	}
 	
 	private long getSearchCount(CrawlerResult result) {
+	    long score = 0;
 	    if (result.url.searchEngine == SearchEngine.GOOGLE) {
-	        int start = result.html.indexOf("<div id=\"resultStats\">");
-	        start = result.html.indexOf("About ", start) + "About ".length();
-	        int end = result.html.indexOf(" results", start);
-	        String target = result.html.substring(start, end);
-	        return removeComma(target);
+//	        int start = result.html.indexOf("<div id=\"resultStats\">");
+//	        start = result.html.indexOf("About ", start) + "About ".length();
+//	        int end = result.html.indexOf(" results", start);
+//	        String target = result.html.substring(start, end);
+//	        score = removeComma(target);
+            int end = result.html.lastIndexOf(",000 results") + ",000".length();
+            int start = result.html.lastIndexOf("About ", end) + "About ".length();
+            String target = result.html.substring(start, end);
+            score = removeComma(target);
 	    } else if (result.url.searchEngine == SearchEngine.BING) {
-	        int start = result.html.indexOf("<span class=\"sb_count\"");
-	        int end = result.html.indexOf("</span>", start) + "</span>".length();
-	        String target = result.html.substring(start, end);
-            target = removeTag(target);
-            end = target.indexOf(" results");
-            target = target.substring(0, end);
-	        return removeComma(target);
+            int end = result.html.lastIndexOf(",000 results</span>") + ",000".length();
+            int start = result.html.lastIndexOf('>', end) + 1;
+            String target = result.html.substring(start, end);
+            score = removeComma(target);
         } else if (result.url.searchEngine == SearchEngine.YAHOO) {
 	        int end = result.html.lastIndexOf(",000 results</span>") + ",000".length();
 	        int start = result.html.lastIndexOf('>', end) + 1;
 	        String target = result.html.substring(start, end);
-	        return removeComma(target);
+	        score = removeComma(target);
 	    }
-	    return 0;
+	    return score;
     }
 	
-    private void handleResult(CrawlerResult result) {
+    private void handleResult(CrawlerResult result, String alt) {
         if (googleSuggestion(result)) {
             return;
         }
-        System.out.println(getSearchCount(result) + " " + result.url.searchEngine);
+        long score = getSearchCount(result);
+        answers.get(alt).scores.offer(new Double(score));
     }
     
 	private Thread createCrawlRequest(final Candidate next) {
@@ -130,10 +160,10 @@ public class Controller {
                         result = crawler.crawl(next.url);
                         if (result != null) {
                             storage.insertRowTable(result);
-                            execWindow.realTimeDisplay(result);
-                            handleResult(result);
                         }
-                    } else {
+                    }
+                    if (result != null) {
+                        handleResult(result, next.alt);
                         execWindow.realTimeDisplay(result);
                     }
                 }
@@ -169,7 +199,12 @@ public class Controller {
 		this.execWindow = execWindow;
 	    setBestAnswer(input);
 	    startCrawling();
-	    
+        for (Map.Entry<String, QueryResult> entry: answers.entrySet()) {
+            System.out.println(entry.getKey() + " " + entry.getValue().getScore());
+            if (entry.getValue().getScore() > best.getScore()) {
+                best = entry.getValue();
+            }
+        }
 	    return best.bestAnswer;
 	}
 }
