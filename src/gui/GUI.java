@@ -1,6 +1,7 @@
 package gui;
 
 import java.awt.Color;
+import java.awt.Dimension;
 import java.awt.EventQueue;
 import java.awt.Font;
 import java.awt.event.ActionEvent;
@@ -18,6 +19,11 @@ import javax.swing.border.LineBorder;
 
 import controller.Controller;
 
+import java.awt.BorderLayout;
+import java.awt.FlowLayout;
+import javax.swing.SwingConstants;
+import java.awt.GridLayout;
+
 public class GUI {
 	private final static String CRAWLER_NAME = "PREPOCHECKER";
 	private final static String EMPTY_SEARCH_STRING = "Please input a key word";
@@ -26,7 +32,7 @@ public class GUI {
 	private JTextField textField;
 	private JButton btnSearch;
 	private JPanel panel;
-	private JPanel prepocheckerLayout;
+	private JPanel prepocheckerPanel;
 	private JPanel panel_1;
 	private JPanel resultPanel;
 	private JLabel result;
@@ -64,19 +70,18 @@ public class GUI {
 	 */
 	private void initialize() {
 		frame = new JFrame(CRAWLER_NAME);
-		frame.setBounds(100, 100, 501, 330);
+		frame.setBounds(100, 100, 545, 298);
 		frame.setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
-		frame.getContentPane().setLayout(null);
 		frame.setVisible(true);
+		frame.getContentPane().setLayout(new FlowLayout(FlowLayout.CENTER, 5, 5));
 		
-		prepocheckerLayout = new JPanel();
-		prepocheckerLayout.setBounds(0, 0, 485, 240);
-		prepocheckerLayout.setBorder(new EmptyBorder(20, 40, 20, 40));
-		frame.getContentPane().add(prepocheckerLayout);
-		prepocheckerLayout.setLayout(new BoxLayout(prepocheckerLayout, BoxLayout.Y_AXIS));
+		prepocheckerPanel = new JPanel();
+		prepocheckerPanel.setBorder(new EmptyBorder(20, 0, 20, 0));
+		frame.getContentPane().add(prepocheckerPanel);
+		prepocheckerPanel.setLayout(new BoxLayout(prepocheckerPanel, BoxLayout.Y_AXIS));
 		
 		panel = new JPanel();
-		prepocheckerLayout.add(panel);
+		prepocheckerPanel.add(panel);
 		panel.setBorder(new EmptyBorder(30, 20, 20, 20));
 		
 		JLabel lblPrepochecker = new JLabel(CRAWLER_NAME);
@@ -86,16 +91,17 @@ public class GUI {
 		lblPrepochecker.setForeground(Color.BLUE);
 		
 		textField = new JTextField();
+		prepocheckerPanel.add(textField);
+		textField.setHorizontalAlignment(SwingConstants.LEFT);
 		textField.setFont(new Font("Tahoma", Font.PLAIN, 14));
 		textField.setToolTipText("Search");
 		
 		// Create the border for textField
 		textField.setBorder(new LineBorder(new Color(60, 179, 113), 2));
-		prepocheckerLayout.add(textField);
 		
 		panel_1 = new JPanel();
 		panel_1.setBorder(new EmptyBorder(15, 20, 20, 20));
-		prepocheckerLayout.add(panel_1);
+		prepocheckerPanel.add(panel_1);
 		
 		btnSearch = new JButton("Prepochecker Search");
 		btnSearch.setToolTipText("Search button");
@@ -104,7 +110,7 @@ public class GUI {
 		
 		resultPanel = new JPanel();
 		resultPanel.setBorder(new EmptyBorder(0, 10, 10, 10));
-		prepocheckerLayout.add(resultPanel);
+		prepocheckerPanel.add(resultPanel);
 		
 		result = new JLabel();
 		result.setToolTipText("Result");
