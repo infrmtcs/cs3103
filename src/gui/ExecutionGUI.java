@@ -11,17 +11,17 @@ import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.ScrollPaneConstants;
 import javax.swing.SwingConstants;
-import javax.swing.border.Border;
 import javax.swing.border.EmptyBorder;
 
 import storage.CrawlerResult;
 import crawler.URL;
 
 import javax.swing.border.LineBorder;
-import javax.swing.BoxLayout;
 import javax.swing.border.MatteBorder;
+
 import java.awt.FlowLayout;
 
+@SuppressWarnings("serial")
 public class ExecutionGUI extends JFrame {
 	private final static String GUI_NAME = "EXECUTION GUI";
 
@@ -86,7 +86,7 @@ public class ExecutionGUI extends JFrame {
 		frame.getContentPane().add(jsp);
 		frame.setVisible(true);
 		
-		for(int i = 0; i < 90; i++){
+		for(int i = 0; i < 1; i++){
 			CrawlerResult c = new CrawlerResult(new URL("http://fsdsdagfgjukdsgfdhfghtyuyttu67765675654353243fs"), "html", 10.1);
 			realTimeDisplay(c);
 		}

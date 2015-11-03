@@ -17,7 +17,6 @@ import javax.swing.border.LineBorder;
 
 import controller.Controller;
 import controller.QueryResult;
-import javax.swing.SwingConstants;
 
 public class GUI{
 	
@@ -43,7 +42,8 @@ public class GUI{
 			public void run() {
 				try {
 					GUI window = new GUI();
-					Controller controller = new Controller(window);
+                    ExecutionGUI executionGUI = new ExecutionGUI();
+					Controller controller = new Controller(window, executionGUI);
 					window.start(controller);
 				} catch (Exception e) {
 					e.printStackTrace();
@@ -129,7 +129,6 @@ public class GUI{
 				if (input.isEmpty()) {
 					result.setText(EMPTY_SEARCH_STRING);
 				} else {
-					ExecutionGUI executionGUI = new ExecutionGUI();
 					controller.query(input);
 				}
 			}

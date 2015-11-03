@@ -48,10 +48,6 @@ public class Storage {
     private static final String OPEN_DB_MSG = "Opened database successfully";
     private static final String CREATE_TABLE_MSG = "Table created successfully";
     private static final String DROP_TABLE_MSG = "Dropped table successfully";
-    private static final String INSERT_ROW_MSG = "Inserted row into table successfully";
-
-    private static final String RETRIEVE_TABLE_MSG = "Retrieved table successfully";
-    private static final String RETRIEVE_ROW_MSG = "Retrieved row from table successfully";
 
     private static Connection connector;
     
@@ -113,7 +109,6 @@ public class Storage {
             stmt.setDouble(3, entry.latency);
             stmt.executeUpdate();
             stmt.close();
-            System.out.println(INSERT_ROW_MSG);
         } catch (Exception e) {
             System.err.println(e.getClass().getName() + ": " + e.getMessage());
         }
@@ -132,7 +127,6 @@ public class Storage {
             }
             rs.close();
             stmt.close();
-            System.out.println(RETRIEVE_TABLE_MSG);
         } catch (Exception e) {
             System.err.println(e.getClass().getName() + ": " + e.getMessage());
         }
@@ -153,7 +147,6 @@ public class Storage {
             }
             rs.close();
             stmt.close();
-            System.out.println(RETRIEVE_ROW_MSG);
         } catch (Exception e) {
             System.err.println(e.getClass().getName() + ": " + e.getMessage());
         }
