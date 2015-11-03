@@ -16,7 +16,6 @@ import javax.swing.border.EmptyBorder;
 import javax.swing.border.LineBorder;
 import javax.swing.border.MatteBorder;
 
-import crawler.URL;
 import storage.CrawlerResult;
 
 public class ExecutionGUI extends JFrame {
@@ -79,11 +78,6 @@ public class ExecutionGUI extends JFrame {
 		jsp.setBorder(new EmptyBorder(20, 20, 20, 20));
 		frame.getContentPane().add(jsp);
 		frame.setVisible(true);
-		
-		for(int i = 0; i < 1; i++){
-			CrawlerResult c = new CrawlerResult(new URL("http://fsdsdagfgjukdsgfdhfghtyuyttu67765675654353243fs"), "html", 10.1);
-			realTimeDisplay(c);
-		}
 	}
 
 	/**

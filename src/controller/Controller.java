@@ -120,7 +120,7 @@ public class Controller {
         System.out.println(getSearchCount(result) + " " + result.url.searchEngine);
     }
     
-	private Thread createCrawlRequest(Candidate next) {
+	private Thread createCrawlRequest(final Candidate next) {
         return new Thread(new Runnable() {
             public void run() {
                 if (next != null) {

@@ -12,6 +12,7 @@ import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JTextField;
+import javax.swing.WindowConstants;
 import javax.swing.border.EmptyBorder;
 import javax.swing.border.LineBorder;
 
@@ -29,7 +30,8 @@ public class GUI {
 	private JPanel prepocheckerLayout;
 	private JPanel panel_1;
 	
-	Controller controller;
+	static ExecutionGUI executionGUI;
+	static GUI window;
 	private JPanel resultPanel;
 	private JLabel result;
 
@@ -38,12 +40,10 @@ public class GUI {
 	 */
 	public static void main(String[] args) {
 		EventQueue.invokeLater(new Runnable() {
+			@Override
 			public void run() {
 				try {
-					GUI window = new GUI();
-                    ExecutionGUI executionGUI = new ExecutionGUI();
-					Controller controller = new Controller(window, executionGUI);
-					window.start(controller);
+					window = new GUI();
 				} catch (Exception e) {
 					e.printStackTrace();
 				}
@@ -58,11 +58,6 @@ public class GUI {
 		initialize();
 	}
 	
-	void start(Controller controller) {
-        this.controller = controller;
-        frame.setVisible(true);
-	}
-	
 	public void printOutput(QueryResult output) {
 	    result.setText(output.bestAnswer);
 	}
@@ -73,7 +68,7 @@ public class GUI {
 	private void initialize() {
 		frame = new JFrame(CRAWLER_NAME);
 		frame.setBounds(100, 100, 501, 330);
-		frame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
+		frame.setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
 		frame.getContentPane().setLayout(null);
 		
 		prepocheckerLayout = new JPanel();
@@ -123,16 +118,20 @@ public class GUI {
 		 * Adjust the result and warning
 		 */
 		btnSearch.addActionListener(new ActionListener() {
+			@Override
 			public void actionPerformed(ActionEvent arg0) {
 			    String input = textField.getText();
 			    
 				if (input.isEmpty()) {
 					result.setText(EMPTY_SEARCH_STRING);
 				} else {
-					new ExecutionGUI();
+					executionGUI = new ExecutionGUI();
+					Controller controller = new Controller(window, executionGUI);
 					controller.query(input);
 				}
 			}
 		});
+		
+		frame.setVisible(true);
 	}
 }
