@@ -28,8 +28,11 @@ public class URL {
 		}
 	}
 	
-	public URL(SearchEngine searchEngine, String keyword) {
-        this(String.format(searchEngine.rawUrl, keyword.replace(' ', '+')));
+	public URL(SearchEngine searchEngine, String keyword, Boolean exact) {
+        this(String.format(searchEngine.rawUrl, (exact ? 
+            ((searchEngine == SearchEngine.GOOGLE) ? ("%22" + keyword + "%22") : ("\"" + keyword + "\"")) : 
+            keyword
+        ).replace(' ', '+')));
         this.searchEngine = searchEngine;  
     }
 }

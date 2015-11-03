@@ -156,7 +156,7 @@ public class Storage {
     public Storage(boolean test) {
         try {
             connector = openDb(test);
-            dropTable();
+//            dropTable();
             createTable();
         } catch (Exception e) {
             System.err.println(e.getClass().getName() + ": " + e.getMessage());
