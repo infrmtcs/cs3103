@@ -57,10 +57,6 @@ public class GUI {
 	public GUI() {
 		initialize();
 	}
-	
-	public void printOutput(QueryResult output) {
-	    result.setText(output.bestAnswer);
-	}
 
 	/**
 	 * Initialize the contents of the frame.
@@ -126,8 +122,9 @@ public class GUI {
 					result.setText(EMPTY_SEARCH_STRING);
 				} else {
 					executionGUI = new ExecutionGUI();
-					Controller controller = new Controller(window, executionGUI);
-					controller.query(input);
+					Controller controller = new Controller(executionGUI);
+					String output = controller.query(input);
+					result.setText(output);
 				}
 			}
 		});

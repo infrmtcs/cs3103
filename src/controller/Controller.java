@@ -43,7 +43,6 @@ public class Controller {
     private Storage storage = new Storage();
     private Crawler crawler = new Crawler();
     
-    private GUI window;
     private ExecutionGUI execWindow;
     
     private QueryResult best = new QueryResult("");
@@ -161,14 +160,14 @@ public class Controller {
 	    }
 	}
 	
-	public void query(String input) {
+	public String query(String input) {
 	    setBestAnswer(input);
 	    startCrawling();
-        window.printOutput(best);
+	    
+	    return best.bestAnswer;
 	}
 
-	public Controller(GUI window, ExecutionGUI execWindow) {
-        this.window = window;
+	public Controller(ExecutionGUI execWindow) {
         this.execWindow = execWindow;
     }
 }
