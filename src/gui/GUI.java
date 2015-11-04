@@ -1,8 +1,9 @@
 package gui;
 
+import java.awt.BorderLayout;
 import java.awt.Color;
-import java.awt.Dimension;
 import java.awt.EventQueue;
+import java.awt.FlowLayout;
 import java.awt.Font;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -14,23 +15,13 @@ import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JTextField;
+import javax.swing.SwingConstants;
 import javax.swing.WindowConstants;
 import javax.swing.border.EmptyBorder;
 import javax.swing.border.LineBorder;
 
 import controller.Controller;
 import controller.QueryResult;
-
-import java.awt.BorderLayout;
-import java.awt.FlowLayout;
-
-import javax.swing.SwingConstants;
-
-import java.awt.GridLayout;
-import java.awt.Component;
-
-import javax.swing.GroupLayout;
-import javax.swing.GroupLayout.Alignment;
 
 public class GUI {
 	private final static String CRAWLER_NAME = "PREPOCHECKER";
