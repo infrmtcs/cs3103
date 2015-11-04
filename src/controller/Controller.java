@@ -39,8 +39,8 @@ class Candidate {
 
 public class Controller {
     private static long TIMEOUT = 500; // 500ms = 0.5s
-    private static long FAST_END = 5;
-    private static int LIMIT = 100;
+    private static long FAST_END = 10;
+    private static int LIMIT = 200;
     
     private HashSet<String> prepositions = new HashSet<String>(Arrays.asList(new String[] {
         "on", "in", "at", "since", "for", 
@@ -48,6 +48,11 @@ public class Controller {
         "over", "up", "down", "above", "below", 
         "through", "into", "about", "off", "from", 
         "under"
+    }));
+
+    private HashSet<String> refWords = new HashSet<String>(Arrays.asList(new String[] {
+        "english", "dictionar", "reference", "forum", 
+        "thesaurus", "idioms", "collocation", "phras"
     }));
 
     private ConcurrentHashMap<String, QueryResult> answers = new ConcurrentHashMap<String, QueryResult>();
@@ -141,14 +146,53 @@ public class Controller {
 	    return score;
     }
 	
+	private double calScore(String url) {
+	    double score = 0.0;
+	    String[] cand = best.bestAnswer.split("\\s+", ' ');
+        for (String word: refWords) {
+            if (url.contains(word)) {
+                score += 0.05;
+            }
+        }
+        for (String word: cand) {
+            if (url.contains(word)) {
+                score += 0.1;
+            }
+        }
+	    return score;
+	}
+	
+	private void parsePage(CrawlerResult result, String alt) {
+	    int end = 0, start = 0;
+	    String target = "";
+	    while (true) {
+            start = result.html.indexOf("<cite", end);
+            if (start == -1) {
+                return;
+            }
+            end = result.html.indexOf("</cite>", start) + "</cite>".length();
+            if (end == -1) {
+                return;
+            }
+            target = result.html.substring(start, end);
+            target = removeTag(target);
+            pageRank.offer(new Candidate(calScore(target), new URL(target), best.bestAnswer, alt));
+        }
+	}
+	
     private void handleResult(CrawlerResult result, String alt) {
         waiting = 0;
         if (googleSuggestion(result)) {
             return;
         }
-        long score = getSearchCount(result);
-        System.out.println(result.url.path + " " + score);
-        answers.get(alt).scores.offer(new Double(score));
+        parsePage(result, alt);
+        if (result.url.searchEngine != SearchEngine.NONE) {
+            long score = getSearchCount(result);
+            System.out.println(result.url.path + " " + score);
+            answers.get(alt).scores.offer(new Double(score));
+        } else {
+            System.out.println(result.url.path);
+        }
     }
     
 	private Thread createCrawlRequest(final Candidate next) {
@@ -196,6 +240,7 @@ public class Controller {
 	}
 	
 	public QueryResult[] query(String input, ExecutionGUI execWindow) {
+	    input = input.toLowerCase();
 	    pageRank.clear();
 	    answers.clear();
 		this.execWindow = execWindow;
