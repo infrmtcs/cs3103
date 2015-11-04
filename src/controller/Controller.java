@@ -216,7 +216,6 @@ public class Controller {
 	}
 	
 	private void startCrawling() {
-	    int last = 0;
 	    waiting = -1000000;
 	    while (counter < LIMIT && waiting < FAST_END) {
 	        ++counter;
@@ -229,7 +228,6 @@ public class Controller {
                     if (next == null) break;
                 } while (next.current != best.bestAnswer);
                 if (next != null) {
-                    last = counter;
                     Thread thread = createCrawlRequest(next);
                     thread.start();
                 }
