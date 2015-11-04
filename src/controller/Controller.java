@@ -195,7 +195,7 @@ public class Controller {
 	    }
 	}
 	
-	public String query(String input, ExecutionGUI execWindow) {
+	public QueryResult[] query(String input, ExecutionGUI execWindow) {
 	    pageRank.clear();
 	    answers.clear();
 		this.execWindow = execWindow;
@@ -209,10 +209,7 @@ public class Controller {
 	            return -doubleCmp.compare((Double)left.getScore(), (Double)right.getScore());
 	        }
 	    });
-	    return String.format("1. %s - %.1f pts 2. %s - %.1f pts 3. %s - %.1f pts", 
-	        ansArr[0].bestAnswer, ansArr[0].getScore() / 1000000, 
-	        ansArr[1].bestAnswer, ansArr[1].getScore() / 1000000, 
-	        ansArr[2].bestAnswer, ansArr[2].getScore() / 1000000
-	    );
+	    
+	    return ansArr;
 	}
 }
