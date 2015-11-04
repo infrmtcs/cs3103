@@ -4,7 +4,7 @@ public class URL {
     public String path;
     public String host;
     public String query;
-	public SearchEngine searchEngine = SearchEngine.NONE; 
+	public SearchEngine searchEngine; 
 	
 	public URL(String url) {
 		path = url;
@@ -25,6 +25,13 @@ public class URL {
 			// No queries here => query should be empty.
 			host = url;
 			query = "";
+		}
+		
+		for (SearchEngine e: SearchEngine.values()) {
+	        if (url.startsWith(e.domain)) {
+	            this.searchEngine = e;
+	            break;
+	        }
 		}
 	}
 	

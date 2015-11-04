@@ -39,7 +39,7 @@ class Candidate {
 
 public class Controller {
     private static long TIMEOUT = 500; // 500ms = 0.5s
-    private static long FAST_END = 20;
+    private static long FAST_END = 5;
     private static int LIMIT = 100;
     
     private HashSet<String> prepositions = new HashSet<String>(Arrays.asList(new String[] {
@@ -60,6 +60,7 @@ public class Controller {
     
     private QueryResult best = new QueryResult("");
     private int counter = 0;
+    private int waiting = 0;
     
     private void setBestAnswer(String answer) {
         if (best.bestAnswer == answer) {
@@ -69,7 +70,7 @@ public class Controller {
         counter = 0;
         String[] words = answer.split("\\s+", ' ');
         int pos = -1;
-        for (int i = 0; i < words.length; ++i) {
+        for (int i = words.length - 1; i >= 0; --i) {
             if (prepositions.contains(words[i])) {
                 pos = i;
                 break;
@@ -87,7 +88,8 @@ public class Controller {
 	private void setupSeed(String input) {
 	    answers.put(input, new QueryResult(input));
 	    pageRank.addAll(Arrays.asList(new Candidate[] {
-            new Candidate(1.0, new URL(SearchEngine.GOOGLE, input, false), best.bestAnswer, input)
+            new Candidate(1.0, new URL(SearchEngine.GOOGLE, input, true), best.bestAnswer, input)
+//          new Candidate(1.0, new URL(SearchEngine.GOOGLE, input, false), best.bestAnswer, input)
 //          new Candidate(1.0, new URL(SearchEngine.BING, input, false), best.bestAnswer, input)
 //	        new Candidate(1.0, new URL(SearchEngine.YAHOO, input), best.bestAnswer, input)
 	    }));
@@ -120,15 +122,11 @@ public class Controller {
 	private long getSearchCount(CrawlerResult result) {
 	    long score = 0;
 	    if (result.url.searchEngine == SearchEngine.GOOGLE) {
-//	        int start = result.html.indexOf("<div id=\"resultStats\">");
-//	        start = result.html.indexOf("About ", start) + "About ".length();
-//	        int end = result.html.indexOf(" results", start);
-//	        String target = result.html.substring(start, end);
-//	        score = removeComma(target);
-            int end = result.html.lastIndexOf(",000 results") + ",000".length();
-            int start = result.html.lastIndexOf("About ", end) + "About ".length();
-            String target = result.html.substring(start, end);
-            score = removeComma(target);
+	        int start = result.html.indexOf("<div id=\"resultStats\">");
+	        start = result.html.indexOf("About ", start) + "About ".length();
+	        int end = result.html.indexOf(" results", start);
+	        String target = result.html.substring(start, end);
+	        score = removeComma(target);
 	    } else if (result.url.searchEngine == SearchEngine.BING) {
             int end = result.html.lastIndexOf(",000 results</span>") + ",000".length();
             int start = result.html.lastIndexOf('>', end) + 1;
@@ -144,10 +142,12 @@ public class Controller {
     }
 	
     private void handleResult(CrawlerResult result, String alt) {
+        waiting = 0;
         if (googleSuggestion(result)) {
             return;
         }
         long score = getSearchCount(result);
+        System.out.println(result.url.path + " " + score);
         answers.get(alt).scores.offer(new Double(score));
     }
     
@@ -173,8 +173,10 @@ public class Controller {
 	
 	private void startCrawling() {
 	    int last = 0;
-	    while (counter < LIMIT) {
+	    waiting = -1000000;
+	    while (counter < LIMIT && waiting < FAST_END) {
 	        ++counter;
+	        ++waiting;
             System.out.println(counter);
 	        Candidate next;
             try {
@@ -186,8 +188,6 @@ public class Controller {
                     last = counter;
                     Thread thread = createCrawlRequest(next);
                     thread.start();
-                } else if (counter - last >= FAST_END) {
-                    break;
                 }
             } catch (InterruptedException e) {
                 e.printStackTrace();
@@ -196,15 +196,23 @@ public class Controller {
 	}
 	
 	public String query(String input, ExecutionGUI execWindow) {
+	    pageRank.clear();
+	    answers.clear();
 		this.execWindow = execWindow;
 	    setBestAnswer(input);
 	    startCrawling();
-        for (Map.Entry<String, QueryResult> entry: answers.entrySet()) {
-            System.out.println(entry.getKey() + " " + entry.getValue().getScore());
-            if (entry.getValue().getScore() > best.getScore()) {
-                best = entry.getValue();
-            }
-        }
-	    return best.bestAnswer;
+	    QueryResult[] ansArr = new QueryResult[answers.size()];
+	    answers.values().toArray(ansArr);
+	    Arrays.sort(ansArr, new Comparator<QueryResult>() {
+	        Comparator<Double> doubleCmp = Comparator.naturalOrder();
+	        public int compare(QueryResult left, QueryResult right) {
+	            return -doubleCmp.compare((Double)left.getScore(), (Double)right.getScore());
+	        }
+	    });
+	    return String.format("1. %s - %.1f pts 2. %s - %.1f pts 3. %s - %.1f pts", 
+	        ansArr[0].bestAnswer, ansArr[0].getScore() / 1000000, 
+	        ansArr[1].bestAnswer, ansArr[1].getScore() / 1000000, 
+	        ansArr[2].bestAnswer, ansArr[2].getScore() / 1000000
+	    );
 	}
 }
