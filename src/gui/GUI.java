@@ -114,7 +114,7 @@ public class GUI {
 		
 		result = new JLabel();
 		result.setToolTipText("Result");
-		result.setFont(new Font("Tahoma", Font.BOLD | Font.ITALIC, 14));
+		result.setFont(new Font("Tahoma", Font.BOLD, 14));
 		result.setForeground(new Color(220, 20, 60));
 		resultPanel.add(result);
 		
