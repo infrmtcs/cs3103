@@ -180,9 +180,24 @@ public class Controller {
         }
 	}
 	
+	private String movedDoc(CrawlerResult result) {
+	    String target = "";
+	    if (result.html.contains("The document has moved")) {
+	        int start = result.html.indexOf("?continue=") + "?continue=".length();
+	        int end = result.html.indexOf("\">here");
+	        target = result.html.substring(start, end);
+	    }
+	    return target;
+	}
+	
     private void handleResult(CrawlerResult result, String alt) {
         waiting = 0;
         if (googleSuggestion(result)) {
+            return;
+        }
+        String moved = movedDoc(result);
+        if (!moved.isEmpty()) {
+//            pageRank.offer(new Candidate(1.0, new URL(moved), best.bestAnswer, alt));
             return;
         }
         parsePage(result, alt);
