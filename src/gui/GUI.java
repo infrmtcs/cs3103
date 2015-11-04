@@ -11,6 +11,7 @@ import javax.swing.BoxLayout;
 import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
+import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JTextField;
 import javax.swing.WindowConstants;
@@ -27,6 +28,7 @@ import javax.swing.SwingConstants;
 
 import java.awt.GridLayout;
 import java.awt.Component;
+
 import javax.swing.GroupLayout;
 import javax.swing.GroupLayout.Alignment;
 
@@ -83,10 +85,25 @@ public class GUI {
 	private void initialize() {
 		frame = new JFrame(CRAWLER_NAME);
 		frame.setBounds(100, 100, 608, 367);
-		frame.setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
 		frame.setVisible(true);
 		frame.getContentPane().setLayout(
 				new FlowLayout(FlowLayout.CENTER, 5, 5));
+		
+		/**
+		 * Action when clicking the close button
+		 */
+		frame.setDefaultCloseOperation(WindowConstants.DO_NOTHING_ON_CLOSE);
+		frame.addWindowListener(new java.awt.event.WindowAdapter() {
+		    @Override
+		    public void windowClosing(java.awt.event.WindowEvent windowEvent) {
+		        if (JOptionPane.showConfirmDialog(frame, 
+		            "Are you sure to close this window?", "Really Closing?", 
+		            JOptionPane.YES_NO_OPTION,
+		            JOptionPane.QUESTION_MESSAGE) == JOptionPane.YES_OPTION){
+		            System.exit(0);
+		        }
+		    }
+		});
 
 		prepocheckerPanel = new JPanel();
 		prepocheckerPanel.setBorder(new EmptyBorder(20, 0, 20, 0));
@@ -128,28 +145,36 @@ public class GUI {
 		resultPanel.setLayout(new BoxLayout(resultPanel, BoxLayout.Y_AXIS));
 
 		panel_2 = new JPanel();
-		panel_2.setBorder(new EmptyBorder(5, 5, 5, 5));
+		panel_2.setBorder(new EmptyBorder(5, 0, 5, 5));
 		resultPanel.add(panel_2);
+		panel_2.setLayout(new BorderLayout(0, 0));
 
 		result1 = new JLabel();
+		result1.setHorizontalAlignment(SwingConstants.LEFT);
 		panel_2.add(result1);
-		result1.setText("dsfafdssdf");
-		result1.setToolTipText("Result");
+		result1.setToolTipText("Third best answer");
 		result1.setFont(new Font("Tahoma", Font.BOLD, 14));
 		result1.setForeground(new Color(220, 20, 60));
 
 		panel_3 = new JPanel();
-		panel_3.setBorder(new EmptyBorder(5, 5, 5, 5));
+		panel_3.setBorder(new EmptyBorder(5, 0, 5, 5));
 		resultPanel.add(panel_3);
+		panel_3.setLayout(new BorderLayout(0, 0));
 
-		result2 = new JLabel("New label");
+		result2 = new JLabel("");
+		result2.setToolTipText("Second best answer");
+		result2.setForeground(new Color(0, 128, 0));
+		result2.setFont(new Font("Tahoma", Font.BOLD, 14));
 		panel_3.add(result2);
 
 		panel_4 = new JPanel();
-		panel_4.setBorder(new EmptyBorder(5, 5, 5, 5));
+		panel_4.setBorder(new EmptyBorder(5, 0, 5, 5));
 		resultPanel.add(panel_4);
+		panel_4.setLayout(new BorderLayout(0, 0));
 
-		result3 = new JLabel("New label");
+		result3 = new JLabel("");
+		result3.setForeground(new Color(0, 191, 255));
+		result3.setFont(new Font("Tahoma", Font.BOLD, 14));
 		panel_4.add(result3);
 
 		/**
@@ -161,6 +186,7 @@ public class GUI {
 				String input = textField.getText();
 
 				if (input.isEmpty()) {
+					result1.setHorizontalAlignment(SwingConstants.CENTER);
 					result1.setText(EMPTY_SEARCH_STRING);
 				} else {
 					executionGUI = new ExecutionGUI();
@@ -168,11 +194,13 @@ public class GUI {
 							.query(input, executionGUI);
 
 					if (ansArr.length < 1) {
+						result1.setHorizontalAlignment(SwingConstants.CENTER);
 						result1.setText(NO_RESULT_MSG);
 					} else {
 						String output1 = String.format("1. %s - %.1f pts",
 								ansArr[0].bestAnswer,
 								ansArr[0].getScore() / 1000000);
+						result1.setHorizontalAlignment(SwingConstants.LEFT);
 						result1.setText(output1);
 
 						String output2 = String.format("2. %s - %.1f pts",
@@ -187,6 +215,6 @@ public class GUI {
 					}
 				}
 			}
-		});
-	}
+		});	
+	}	
 }
